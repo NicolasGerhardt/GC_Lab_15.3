@@ -143,11 +143,28 @@ namespace GC_Lab_15._3.Controllers
             return orders;
         }
 
+
+
         [HttpPost]
         public object Post(OrderShipment order)
         {
-            return new { success = "No implemented" };
+            int rows = 0;
+            string[] allCustomerIDs = null;
+
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string SQLallCustomerIDs = "select DISTINCT CustomerID from Customers";
+                allCustomerIDs = conn.Query<string>(SQLallCustomerIDs).ToArray();
+            }
+
+            if (!allCustomerIDs.Contains(order.CustomerID))
+            {
+                return new { success = false, message = "Invalid CustomerID", ValidCustomerIDs = allCustomerIDs };
+            }
+
+            return new { success = false, message = "Valid CustomerID" };
         }
+
 
         [HttpDelete("{id}")]
         public object Delete(int id)
