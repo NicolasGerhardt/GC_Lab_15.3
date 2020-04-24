@@ -162,7 +162,19 @@ namespace GC_Lab_15._3.Controllers
                 return new { success = false, message = "Invalid CustomerID", ValidCustomerIDs = allCustomerIDs };
             }
 
-            return new { success = false, message = "Valid CustomerID" };
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                string insertString = "insert into Orders ";
+                insertString += "(CustomerID, OrderDate, ShippedDate, ShipName, ShipAddress, ShipCity, ShipPostalCode, ShipRegion, ShipCountry) ";
+                insertString += "values (@CustomerID, @OrderDate, @ShippedDate, @ShipName, @ShipAddress, @ShipCity, @ShipPostalCode, @ShipRegion, @ShipCountry) ";
+                insertString += "SELECT SCOPE_IDENTITY() AS [SCOPE_IDENTITY] ";
+
+                int orderID = conn.ExecuteScalar<int>(insertString, order);
+                order.OrderID = orderID;
+            }
+
+
+            return new { success = order.OrderID != 0, order };
         }
 
 
