@@ -57,5 +57,49 @@ namespace GC_Lab_15._3.Controllers
 
             return customers;
         }
+        [HttpPost]
+        public object Post(Customer c)
+        {
+            string newId = "";
+            using (SqlConnection conn = new SqlConnection(connectionString))
+            {
+                //Following are not null in DB
+                //public string CustomerID { get; set; }
+                //public string CompanyName { get; set; }
+                
+
+                string queryString = "INSERT INTO Customers (CustomerID, CompanyName )";
+                queryString += " VALUES (@CustomerID, @CompanyName);";
+                queryString += " SELECT * FROM Customers WHERE CustomerID = @CustomerID;";
+
+               
+                
+
+
+                try
+                {
+                    newId = conn.ExecuteScalar<string>(queryString, c);
+                }
+                catch (Exception e)
+                {
+                    newId = null;
+                    //log the error--get details from e
+                }
+                finally //cleanup!
+                {
+                   
+                }
+
+
+
+                if (newId == null)
+                {
+                    return new { success = false };
+                }
+                return new { success = true, id = newId };
+
+            }
+
+        }
     }
 }
